@@ -1,0 +1,26 @@
+{{template "base" .}}
+{{define "content"}}
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1>This is the About page</h1>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Cupiditate
+        neque ducimus, minima ipsa quo temporibus, inventore, aperiam eius quam
+        maxime enim facere. Rem officia numquam dolores placeat velit corporis
+        nesciunt!
+      </p>
+      <p>
+        {{index .StringMap "test"}}
+      </p>
+      <!-- If rempote ip is not equal to empty string -->
+      <p>
+        {{if ne (index .StringMap "remote_ip") ""}}
+        Your remote IP address is: {{index .StringMap "remote_ip"}}
+        {{else}}
+        no remote IP detected. Visit <a href="/">Home Page</a> {{ end }}
+      </p>
+    </div>
+  </div>
+</div>
+{{ end }}
