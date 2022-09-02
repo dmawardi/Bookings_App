@@ -1,15 +1,17 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
-	"github.com/dmawardi/bookings/pkg/config"
-	"github.com/dmawardi/bookings/pkg/handlers"
-	"github.com/dmawardi/bookings/pkg/render"
+	"github.com/dmawardi/bookings/internal/config"
+	"github.com/dmawardi/bookings/internal/handlers"
+	"github.com/dmawardi/bookings/internal/models"
+	"github.com/dmawardi/bookings/internal/render"
 )
 
 // Init state (incl. templates)
@@ -20,6 +22,10 @@ const portNumber = ":8080"
 var session *scs.SessionManager
 
 func main() {
+	// In Session, you can store primitives.
+	// If more complex, define first
+	gob.Register(models.ReservationForm{})
+
 	// Change this to true in production
 	app.InProduction = false
 

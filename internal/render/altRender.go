@@ -8,8 +8,9 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/dmawardi/bookings/pkg/config"
-	"github.com/dmawardi/bookings/pkg/models"
+	"github.com/dmawardi/bookings/internal/config"
+	"github.com/dmawardi/bookings/internal/models"
+	"github.com/justinas/nosurf"
 )
 
 // Used when parsing files
@@ -23,13 +24,19 @@ func SetTemplate(a *config.AppConfig) {
 }
 
 // Adds default data for every page
-func AddDefaultTemplateData(td *models.TemplateData) *models.TemplateData {
+func AddDefaultTemplateData(td *models.TemplateData, r *http.Request) *models.TemplateData {
 	// Add defaults
-	td.StringMap["Sample"] = "Sample default data."
+	// td.StringMap["Sample"] = "Sample default data."
+	td.Flash = app.Session.PopString(r.Context(), "flash")
+	td.Warning = app.Session.PopString(r.Context(), "warning")
+	td.Error = app.Session.PopString(r.Context(), "error")
+
+	// Set CSRF token
+	td.CSRFToken = nosurf.Token(r)
 	return td
 }
 
-func AltRenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
+func AltRenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) {
 	// Create template cache var
 	var templateCache map[string]*template.Template
 	// If config detected to use cache
@@ -51,7 +58,7 @@ func AltRenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateDa
 	// Create new buffer
 	buf := new(bytes.Buffer)
 
-	AddDefaultTemplateData(td)
+	AddDefaultTemplateData(td, r)
 	// Execute template in buffer using data
 	dataInputError := foundTemplate.Execute(buf, td)
 	if dataInputError != nil {
