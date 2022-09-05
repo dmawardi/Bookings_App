@@ -17,6 +17,7 @@ import (
 var functions = template.FuncMap{}
 
 var app *config.AppConfig
+var pathToTemplates = "./templates"
 
 // Sets the config for the template page
 func SetTemplate(a *config.AppConfig) {
@@ -36,7 +37,7 @@ func AddDefaultTemplateData(td *models.TemplateData, r *http.Request) *models.Te
 	return td
 }
 
-func AltRenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) {
+func AltRenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) error {
 	// Create template cache var
 	var templateCache map[string]*template.Template
 	// If config detected to use cache
@@ -70,8 +71,9 @@ func AltRenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *
 	// If error detected
 	if executionError != nil {
 		fmt.Println("Error encountered with render.", executionError.Error())
-		return
+		return executionError
 	}
+	return nil
 }
 
 func CreateTemplateCache() (map[string]*template.Template, error) {
@@ -79,7 +81,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 	templateCache := map[string]*template.Template{}
 
 	// get all files with page.tmpl from templates folder
-	pages, err := filepath.Glob("./templates/*.page.tmpl")
+	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.tmpl", pathToTemplates))
 	if err != nil {
 		// Return the cache and error
 		return templateCache, err
@@ -98,7 +100,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 		}
 
 		// get all files with layout.tmpl from templates folder
-		layoutMatches, err := filepath.Glob("./templates/*.layout.tmpl")
+		layoutMatches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
 		if err != nil {
 			// Return the cache and error
 			return templateCache, err
@@ -107,7 +109,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 		// if any layoutMatches are found
 		if len(layoutMatches) > 0 {
 			// Adds layoutMatches to template set using parseGlob
-			templateSet, err = templateSet.ParseGlob("./templates/*.layout.tmpl")
+			templateSet, err = templateSet.ParseGlob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
 			if err != nil {
 				// Return the cache and error
 				return templateCache, err

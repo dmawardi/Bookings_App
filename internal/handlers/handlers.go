@@ -109,7 +109,7 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	// Validation (Populates the Errors property)
 	// Will check that form field is not an empty string
 	form.Required("first_name", "last_name", "email")
-	form.MinLength("last_name", 4, r)
+	form.MinLength("last_name", 4)
 	form.IsEmail("email")
 
 	// if not valid

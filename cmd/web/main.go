@@ -22,6 +22,23 @@ const portNumber = ":8080"
 var session *scs.SessionManager
 
 func main() {
+	err := run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Starting application on port: %s\n", portNumber)
+
+	srv := &http.Server{
+		Addr:    portNumber,
+		Handler: routes(&app),
+	}
+
+	err = srv.ListenAndServe()
+	log.Fatal(err)
+}
+
+func run() error {
 	// In Session, you can store primitives.
 	// If more complex, define first
 	gob.Register(models.ReservationForm{})
@@ -44,6 +61,7 @@ func main() {
 	createdCache, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("Failed to create template cache")
+		return err
 	}
 	// Store created cache in app config
 	app.TemplateCache = createdCache
@@ -58,14 +76,5 @@ func main() {
 
 	// Sets template cache for render package
 	render.SetTemplate(&app)
-
-	fmt.Printf("Starting application on port: %s\n", portNumber)
-
-	srv := &http.Server{
-		Addr:    portNumber,
-		Handler: routes(&app),
-	}
-
-	err = srv.ListenAndServe()
-	log.Fatal(err)
+	return nil
 }
