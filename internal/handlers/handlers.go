@@ -8,6 +8,7 @@ import (
 
 	"github.com/dmawardi/bookings/internal/config"
 	"github.com/dmawardi/bookings/internal/forms"
+	"github.com/dmawardi/bookings/internal/helpers"
 	"github.com/dmawardi/bookings/internal/models"
 	"github.com/dmawardi/bookings/internal/render"
 )
@@ -92,7 +93,7 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	// Handle error
 	if err != nil {
-		log.Println("Error occurred while parsing form")
+		helpers.ServerError(w, err)
 		return
 	}
 
@@ -185,7 +186,8 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 	// create Json using response (uses struct json details). No previx and indent with 5 spaces
 	out, err := json.MarshalIndent(resp, "", "     ")
 	if err != nil {
-		fmt.Println("Encountered error providing availability JSON")
+		helpers.ServerError(w, err)
+		return
 	}
 
 	// Edit content type
@@ -196,12 +198,13 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 
 // Reservation Summary is shown after POSTing form
 func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
-	// reservation := m.App.Session.Get(r.Context(), "reservation")
+	reservation := m.App.Session.Get(r.Context(), "reservation")
 	// ok is added to grab type casting error
 	// Get reservation from session and cast as reservation form
 	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.ReservationForm)
 	if !ok {
 		log.Println("Couldn't find reservation in Sessions")
+		m.App.ErrorLog.Println("Can't get error from session")
 		// Place error in context sessions to display on page
 		m.App.Session.Put(r.Context(), "error", "Can't get reservation from Session")
 		// redirect user (auto displays message upon redirect)

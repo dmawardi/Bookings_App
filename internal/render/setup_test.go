@@ -2,6 +2,7 @@ package render
 
 import (
 	"encoding/gob"
+	"log"
 	"net/http"
 	"os"
 	"testing"
@@ -21,6 +22,17 @@ func TestMain(m *testing.M) {
 
 	// change this to true when in production
 	testApp.InProduction = false
+
+	// Create info log that outputs to std output, has prefix INFO, then date/time
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	// Set app info log as created logger
+	testApp.InfoLog = infoLog
+
+	// Create error log that outputs to std output, has prefix INFO, then date/time
+	// short file provides information on error
+	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	// Set app error log as created logger
+	testApp.ErrorLog = errorLog
 
 	// set up the session
 	session = scs.New()

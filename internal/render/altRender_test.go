@@ -1,6 +1,7 @@
 package render
 
 import (
+	"log"
 	"net/http"
 	"testing"
 
@@ -24,7 +25,7 @@ func TestAddDefaultData(t *testing.T) {
 
 }
 
-func TestRenderTemplate(t *testing.T) {
+func TestAltRenderTemplate(t *testing.T) {
 	pathToTemplates = "./../../templates"
 	tc, err := CreateTemplateCache()
 	if err != nil {
@@ -46,6 +47,7 @@ func TestRenderTemplate(t *testing.T) {
 	}
 
 	err = AltRenderTemplate(&ww, r, "non-existent.page.tmpl", &models.TemplateData{})
+	log.Println("Should be error", err)
 	if err == nil {
 		t.Error("rendered template that does not exist")
 	}

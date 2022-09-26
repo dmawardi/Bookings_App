@@ -55,7 +55,6 @@ func TestHandlers(t *testing.T) {
 		if e.method == "GET" {
 			// GET request to test server URL + URL to test
 			resp, err := ts.Client().Get(ts.URL + e.url)
-			t.Log("resp: ", resp)
 
 			if err != nil {
 				t.Log(err)

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"path/filepath"
 
@@ -51,9 +50,10 @@ func AltRenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *
 	}
 
 	// Find template in cache
-	foundTemplate, templateError := templateCache[tmpl]
-	if !templateError {
-		log.Fatal("Could not retrieve template from cache", templateError)
+	foundTemplate, ok := templateCache[tmpl]
+	fmt.Println(tmpl)
+	if !ok {
+		app.ErrorLog.Println("Could not retrieve template from cache")
 	}
 
 	// Create new buffer
